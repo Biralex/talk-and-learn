@@ -1,0 +1,10 @@
+data/
+.qodo/
+.venv/
+__pycache__/
+*.py[cod]
+*.pyo
+.idea/
+.DS_Store
+src/pronunciation_of_words/weights/Kokoro/
+src/pronunciation_of_words/weights/config.json

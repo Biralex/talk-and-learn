@@ -1,0 +1,19 @@
+services:
+  tts:
+    image: text-to-speech
+    container_name: text-to-speech
+    env_file: .env
+    ports:
+      - $TTS_PORT:$TTS_PORT
+    build:
+      context: .
+      dockerfile: build_data/dockerfiles/tts
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - './weights/:/app/weights/'

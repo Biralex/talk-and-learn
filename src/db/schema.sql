@@ -1,0 +1,49 @@
+CREATE TABLE IF NOT EXISTS words (
+  id INTEGER PRIMARY KEY,
+  lemma TEXT NOT NULL UNIQUE,
+  translation TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  source_url TEXT,
+  audio_path TEXT
+);
+
+CREATE TABLE IF NOT EXISTS examples (
+  id INTEGER PRIMARY KEY,
+  word_id INTEGER NOT NULL REFERENCES words(id) ON DELETE CASCADE,
+  sentence TEXT NOT NULL,
+  translation TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS cards (
+  id INTEGER PRIMARY KEY,
+  word_id INTEGER NOT NULL REFERENCES words(id) ON DELETE CASCADE,
+  direction TEXT NOT NULL CHECK (direction IN ('fwd', 'rev')),
+  due TEXT,
+  state INTEGER NOT NULL DEFAULT 1,
+  step INTEGER,
+  stability REAL,
+  difficulty REAL,
+  last_review TEXT,
+  UNIQUE (word_id, direction)
+);
+
+CREATE TABLE IF NOT EXISTS topics (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL UNIQUE,
+  done INTEGER NOT NULL DEFAULT 0 CHECK (done IN (0, 1))
+);
+
+CREATE TABLE IF NOT EXISTS grammar_topics (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL UNIQUE,
+  done INTEGER NOT NULL DEFAULT 0 CHECK (done IN (0, 1))
+);
+
+CREATE TABLE IF NOT EXISTS review_log (
+  id INTEGER PRIMARY KEY,
+  card_id INTEGER NOT NULL REFERENCES cards(id) ON DELETE CASCADE,
+  reviewed_at TEXT NOT NULL,
+  correct INTEGER NOT NULL,
+  rating INTEGER NOT NULL,
+  think_ms INTEGER NOT NULL
+);

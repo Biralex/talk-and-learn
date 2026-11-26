@@ -1,0 +1,31 @@
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+DATA_DIR = ROOT / "data"
+AUDIO_DIR = DATA_DIR / "audio"
+TTS_URL = "http://0.0.0.0:9091"
+TTS_VOICE = "af_sky"
+
+DEFAULT_LANG = "en"
+SPACY_MODELS = {"en": "en_core_web_md"}
+LOG_LEVEL = "INFO"
+LOG_FILE = DATA_DIR / "app.log"
+SEPARATOR = "─" * 40
+
+ZIPF_MIN = 2.0
+ZIPF_MAX = 5.0
+WINDOW = 10
+
+PRACTICE_WORDS_N = 20
+REV_UNLOCK_DELAY_HOURS = 24
+DESIRED_RETENTION = 0.9
+
+FUZZY_RATIO = 0.85
+FUZZY_MIN_LEN = 5
+TYPING_MS_PER_CHAR = 400
+BASELINE_N = 50
+BASELINE_MIN = 20
+FIXED_FAST_S = 4
+FIXED_OK_S = 10
+REL_FAST = 0.7
+REL_OK = 1.5

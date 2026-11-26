@@ -1,0 +1,1 @@
+Here you should store config.json, Kokoro model and voices from https://huggingface.co/hexgrad/Kokoro-82M
