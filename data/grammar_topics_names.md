@@ -1,0 +1,142 @@
+- Present continuous (I am doing)
+- Present simple (I do)
+- Present continuous and present simple 1 (I am doing and I do)
+- Present continuous and present simple 2 (I am doing and I do)
+- Past simple (I did)
+- Past continuous (I was doing)
+- Present perfect 1 (I have done)
+- Present perfect 2 (I have done)
+- Present perfect continuous (I have been doing)
+- Present perfect continuous and simple (I have been doing and I have done)
+- how long have you (been) ...?
+- for and since; When ...? and How long ...?
+- Present perfect and past 1 (I have done and I did)
+- Present perfect and past 2 (I have done and I did)
+- Past perfect (I had done)
+- Past perfect continuous (I had been doing)
+- have and have got
+- used to (do)
+- Present tenses (I am doing / I do) for the future
+- I'm going to (do)
+- will and shall 1
+- will and shall 2
+- I will and I'm going to
+- will be doing and will have done
+- when I do and when I've done; if and when
+- can, could and (be) able to
+- could (do) and could have (done)
+- must and can't
+- may and might 1
+- may and might 2
+- have to and must
+- must, mustn't, needn't
+- should 1
+- should 2
+- I'd better ...; it's time ...
+- would
+- can/could/would you ...? etc. (requests, offers, permission and invitations)
+- if I do ... and if I did ...
+- if I knew ...; I wish I knew ...
+- if I had known ...; I wish I had known ...
+- wish
+- Passive 1 (is done / was done)
+- Passive 2 (be done / been done / being done)
+- Passive 3
+- it is said that ...; he is said to ...; he is supposed to ...
+- have something done
+- Reported speech 1 (he said that ...)
+- Reported speech 2
+- Questions 1
+- Questions 2 (do you know where ...? / he asked me where ...)
+- Auxiliary verbs (have/do/can etc.); I think so / I hope so etc.
+- Question tags (do you? isn't it? etc.)
+- Verb + -ing (enjoy doing / stop doing etc.)
+- Verb + to ... (decide to ... / forget to ... etc.)
+- Verb (+ object) + to ... (I want you to ...)
+- Verb + -ing or to ... 1 (remember, regret etc.)
+- Verb + -ing or to ... 2 (try, need, help)
+- Verb + -ing or to ... 3 (like / would like etc.)
+- prefer and would rather
+- Preposition (in/for/about etc.) + -ing
+- be/get used to ... (I'm used to ...)
+- Verb + preposition + -ing (succeed in -ing / insist on -ing etc.)
+- there's no point in -ing; it's worth -ing etc.
+- to ..., for ... and so that ...
+- Adjective + to ...
+- to ... (afraid to do) and preposition + -ing (afraid of -ing)
+- see somebody do and see somebody doing
+- -ing clauses (He hurt his knee playing football.)
+- Countable and uncountable 1
+- Countable and uncountable 2
+- Countable nouns with a/an and some
+- a/an and the
+- the 1
+- the 2 (school / the school etc.)
+- the 3 (children / the children)
+- the 4 (the giraffe / the telephone / the old etc.)
+- Names with and without the 1
+- Names with and without the 2
+- Singular and plural
+- Noun + noun (a bus driver / a headache)
+- -'s (your sister's name) and of ... (the name of the book)
+- myself/yourself/themselves etc.
+- a friend of mine; my own house; on my own / by myself
+- there ... and it ...
+- some and any
+- no/none/any; nothing/nobody etc.
+- much, many, little, few, a lot, plenty
+- all / all of; most / most of; no / none of etc.
+- both / both of; neither / neither of; either / either of
+- all, every, whole
+- each and every
+- Relative clauses 1: clauses with who/that/which
+- Relative clauses 2: clauses with and without who/that/which
+- Relative clauses 3: whose/whom/where
+- Relative clauses 4: extra information clauses
+- -ing and -ed clauses (the woman talking to Tom, the boy injured in the accident)
+- Adjectives ending in -ing and -ed (boring/bored etc.)
+- Adjectives: a nice new house, you look tired
+- Adjectives and adverbs 1 (quick/quickly)
+- Adjectives and adverbs 2 (well, fast, late, hard/hardly)
+- so and such
+- enough and too
+- quite, pretty, rather and fairly
+- Comparative 1 (cheaper, more expensive etc.)
+- Comparative 2 (much better / any better etc.)
+- Comparative 3 (as ... as / than)
+- Superlative (the longest, the most enjoyable etc.)
+- Word order 1: verb + object; place and time
+- Word order 2: adverbs with the verb
+- still, any more, yet, already
+- even
+- although, though, even though; in spite of, despite
+- in case
+- unless, as long as, provided
+- as (as I walked ... / as I was ... etc.)
+- like and as
+- like, as if
+- during, for, while
+- by and until; by the time ...
+- at/on/in (time)
+- on time and in time; at the end and in the end
+- in/at/on (position) 1
+- in/at/on (position) 2
+- in/at/on (position) 3
+- to, at, in and into
+- in/on/at (other uses)
+- by
+- Noun + preposition (reason for, cause of etc.)
+- Adjective + preposition 1
+- Adjective + preposition 2
+- Verb + preposition 1: to and at
+- Verb + preposition 2: about/for/of/after
+- Verb + preposition 3: about and of
+- Verb + preposition 4: of/for/from/on
+- Verb + preposition 5: in/into/with/to/on
+- Phrasal verbs 1: introduction
+- Phrasal verbs 2: in/out
+- Phrasal verbs 3: out
+- Phrasal verbs 4: on/off
+- Phrasal verbs 5: up/down
+- Phrasal verbs 6: up
+- Phrasal verbs 7: away/back

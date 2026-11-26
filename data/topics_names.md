@@ -1,0 +1,149 @@
+- Daily routine and time management
+- Morning person or night owl
+- Food and cooking
+- Eating out
+- Comfort food and food memories
+- Shopping: online or in stores
+- Spend or save
+- Clothes and personal style
+- Where you live: house or flat
+- Your dream home
+- Neighbours and community
+- Moving to a new place
+- City or countryside
+- Weather and seasons
+- Pets and animals
+- Hobbies and free time
+- Birthdays and celebrations
+- Traditions and festivals
+- Gifts: giving and receiving
+- Family
+- Best friends
+- Making friends as an adult
+- Dating and relationships
+- The generation gap
+- Childhood memories
+- Describing personality
+- Role models and idols
+- First impressions and stereotypes
+- Modern manners and etiquette
+- Dealing with difficult people
+- Giving and taking advice
+- Healthy habits
+- Sport and exercise
+- Visiting the doctor
+- Stress and how you relax
+- Sleep and energy
+- Emotions and mental wellbeing
+- Diet and nutrition
+- Work-life balance
+- Accidents and injuries
+- Planning your perfect holiday
+- Holidays when things went wrong
+- Hotels and accommodation
+- Airports and flying
+- Public transport or car
+- Your commute
+- Directions and getting around a city
+- Sightseeing and recommendations
+- Cultural differences when travelling
+- Living abroad
+- Eco-friendly travel
+- Your school and university years
+- Tips for learning English
+- Learning new skills as an adult
+- Studying abroad
+- Online learning or classroom
+- Exams and stress
+- Languages you speak and want to learn
+- University or work experience
+- What you do at work
+- Your dream job
+- Job interviews
+- Finding a job and writing a CV
+- Working from home or in the office
+- Colleagues and teamwork
+- Bosses and management styles
+- Changing careers
+- Motivation, pay and promotion
+- Freelance or employed
+- Starting your own business
+- Stress and burnout at work
+- Good and bad customer service
+- Making a complaint
+- Workplace conflicts and how to solve them
+- Explaining your job to a non-technical person
+- Software projects: planning and deadlines
+- Bugs and problems: explaining what went wrong
+- Giving and receiving feedback
+- Presenting a product or an idea
+- Startups and investors
+- Remote teams and time zones
+- Working with clients
+- Smartphones in daily life
+- Social media
+- Screen time and digital habits
+- Artificial intelligence in everyday life
+- AI at work: help or threat
+- Online privacy and security
+- Online shopping and delivery
+- Films and TV series
+- Music and concerts
+- Books and reading
+- News and fake news
+- Video games
+- A day without internet or power
+- Environment and climate
+- Recycling and waste
+- Cities of the future
+- Crime and safety
+- Luck and coincidences
+- Celebrity culture
+- A person from history you admire
+- Volunteering and charity
+- Rules and laws
+- The cost of living
+- Traditions versus modern life
+- A life-changing experience
+- Your biggest mistake and what you learned
+- A memorable journey
+- Telling a story
+- If you won the lottery
+- If you could live anywhere
+- If you could meet anyone
+- If you could change one thing in your city
+- Time travel: past or future
+- Plans and ambitions for the next five years
+- Predictions: life in 20 years
+- Role-play: asking permission and making requests
+- Role-play: making suggestions to friends
+- Role-play: complaining in a restaurant or hotel
+- Cultures of work
+- Relocating abroad for work
+- Small talk with business contacts
+- Disruptive technology
+- Telephone communication
+- Motivating people
+- Pay and working conditions
+- Performance reviews
+- Recruiting, training and keeping staff
+- Company structures
+- Reorganising a company
+- Supply chain
+- Negotiating
+- Quality and continuous improvement
+- Marketing strategy
+- Presentations: structure and openings
+- Customer relationships
+- Handling customer complaints
+- Cash flow and investing
+- SWOT analysis and strategic decisions
+- Problems and solutions
+- Learning organisations and knowledge sharing
+- Arranging and rescheduling a meeting
+- Opening a meeting and introductions
+- Reporting progress and explaining cause and effect
+- Interrupting politely and asking for clarification
+- Agreeing, disagreeing and giving opinions
+- Making decisions, offers and voting
+- Ending a meeting: action points and follow-up emails
