@@ -23,7 +23,7 @@ def run(lang: str, redo_all: bool) -> None:
         done = failed = 0
         for i, row in enumerate(todo, 1):
             try:
-                path = tts.save(row["lemma"], voice=settings.TTS_VOICE)
+                path = tts.save(row["lemma"], lang=lang)
                 db.set_audio_path(conn, row["id"], str(path))
                 done += 1
                 print(f"  [{i}/{len(todo)}] {row['lemma']}")
@@ -39,7 +39,7 @@ def run(lang: str, redo_all: bool) -> None:
 if __name__ == "__main__":
     # python -m src.adhoc.voice_words [--all]
     parser = argparse.ArgumentParser(description="Generate pronunciation audio for words that have none")
-    parser.add_argument("--all", action="store_true", help="re-voice every word, e.g. after changing TTS_VOICE")
-    parser.add_argument("--lang", default=settings.DEFAULT_LANG)
+    parser.add_argument("--all", action="store_true", help="re-voice every word, e.g. after changing the voice in settings")
+    parser.add_argument("--lang", default=settings.DEFAULT_LANG, choices=list(settings.LANGUAGES))
     args = parser.parse_args()
     run(args.lang, args.all)

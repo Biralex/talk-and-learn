@@ -10,23 +10,25 @@ logger = get_logger(__name__)
 
 SCHEMA = Path(__file__).resolve().parent / "schema.sql"
 TOPIC_TABLES = frozenset({"topics", "grammar_topics"})
-# Topic lists shipped with the repo, loaded on init: table -> Markdown file ("- Title" lines)
-DEFAULT_TOPIC_FILES = {
-    "topics": settings.ROOT / "data" / "topics_names.md",
-    "grammar_topics": settings.ROOT / "data" / "grammar_topics_names.md",
-}
+
 
 def db_path(lang: str) -> Path:
+    if lang not in settings.LANGUAGES:  # also keeps a tool argument from pointing outside data/
+        raise ValueError(f"Unknown language {lang!r}. Configured: {', '.join(settings.LANGUAGES)}")
     return settings.DATA_DIR / f"{lang}.db"
 
 
 def connect(lang: str) -> sqlite3.Connection:
+    """Open the language's database, creating the tables if they do not exist yet"""
+    path = db_path(lang)
     settings.DATA_DIR.mkdir(exist_ok=True)
-    conn = sqlite3.connect(db_path(lang))
+    conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA foreign_keys=ON")
+    conn.executescript(SCHEMA.read_text(encoding="utf-8"))  # CREATE TABLE IF NOT EXISTS: a no-op when present
     try:
+        # databases created before the audio_path column existed
         conn.execute("ALTER TABLE words ADD COLUMN audio_path TEXT")
         conn.commit()
     except sqlite3.OperationalError:
@@ -36,8 +38,6 @@ def connect(lang: str) -> sqlite3.Connection:
 
 def init(lang: str) -> None:
     conn = connect(lang)
-    conn.executescript(SCHEMA.read_text(encoding="utf-8"))
-    conn.commit()
     conn.close()
     logger.info("The %s database has been initialized", db_path(lang))
 
@@ -49,10 +49,13 @@ def read_topic_titles(path: Path) -> list[str]:
 
 
 def load_default_topics(lang: str) -> None:
-    """Load the conversation and grammar topic lists shipped with the repo (duplicates are skipped)"""
+    """Load the language's conversation topics and grammar units from the files in
+    settings.LANGUAGES (duplicates are skipped)"""
+    cfg = settings.LANGUAGES[lang]
     conn = connect(lang)
     try:
-        for table, path in DEFAULT_TOPIC_FILES.items():
+        for table in ("topics", "grammar_topics"):
+            path = cfg[table]
             if not path.exists():
                 logger.warning("Topic file %s not found, %s left as is", path, table)
                 continue

@@ -7,6 +7,7 @@ import termios
 import tty
 from src import settings
 from src.db import db
+from src.lang import display, display_sentence, to_storage
 
 SEPARATOR = settings.SEPARATOR
 
@@ -51,17 +52,17 @@ def get_character() -> str:
         termios.tcsetattr(fd, termios.TCSADRAIN, old)
 
 
-def render_word(word: dict, idx: int, total: int, can_play: bool = True) -> None:
+def render_word(word: dict, idx: int, total: int, can_play: bool = True, lang: str = settings.DEFAULT_LANG) -> None:
     """
     Clear the screen and display a word card with translation, examples, and navigation hint
     """
     print("\033[2J\033[H", end="") # сlear the screen
     print(SEPARATOR)
     translations = " / ".join(v.strip() for v in word["translation"].split(";"))
-    print(f"  {word['lemma']}  —  {translations}")
+    print(f"  {display(lang, word['lemma'])}  —  {translations}")
     print(SEPARATOR)
     for i, ex in enumerate(word["examples"], 1):
-        print(f"  {i}. {ex['sentence']}")
+        print(f"  {i}. {display_sentence(lang, ex['sentence'])}")
         print(f"     {ex['translation']}")
     print()
     audio_hint = "  [Space] play audio" if word["audio_path"] and can_play else ""
@@ -70,7 +71,7 @@ def render_word(word: dict, idx: int, total: int, can_play: bool = True) -> None
         print("  (no audio player found: install pulseaudio-utils, alsa-utils or ffmpeg)")
 
 
-def browse(words: list) -> None:
+def browse(words: list, lang: str = settings.DEFAULT_LANG) -> None:
     if not words:
         print("No words were found in the database")
         return
@@ -80,7 +81,7 @@ def browse(words: list) -> None:
     player = find_audio_player()
     can_play = player is not None
 
-    render_word(words[idx], idx, len(words), can_play)
+    render_word(words[idx], idx, len(words), can_play, lang)
 
     while True:
         ch = get_character()
@@ -89,10 +90,10 @@ def browse(words: list) -> None:
             break
         elif ch == '\x1b[C':  # →
             idx = (idx + 1) % len(words)
-            render_word(words[idx], idx, len(words), can_play)
+            render_word(words[idx], idx, len(words), can_play, lang)
         elif ch == '\x1b[D':  # ←
             idx = (idx - 1) % len(words)
-            render_word(words[idx], idx, len(words), can_play)
+            render_word(words[idx], idx, len(words), can_play, lang)
         elif ch == ' ' and words[idx]["audio_path"] and can_play:
             if audio_proc and audio_proc.poll() is None:
                 audio_proc.terminate()
@@ -119,7 +120,8 @@ def run(lang: str, source: str, last: int | None, part_of_word: str) -> None:
     elif last is not None:
         rows = db.last_words(conn, last)
     else:
-        rows = db.words_by_part(conn, part_of_word)
+        # Serbian words are stored in Latin: a Cyrillic search finds them too
+        rows = db.words_by_part(conn, to_storage(lang, part_of_word).lower())
 
     words = [
         {**dict(row), "examples": db.get_examples(conn, row["id"])}
@@ -127,7 +129,7 @@ def run(lang: str, source: str, last: int | None, part_of_word: str) -> None:
     ]
     conn.close()
 
-    browse(words)
+    browse(words, lang)
 
 
 if __name__ == "__main__":
@@ -137,6 +139,8 @@ if __name__ == "__main__":
     group.add_argument("--source", default="", help="YouTube video URL")
     group.add_argument("--last", type=int, metavar="N", help="last N words added")
     group.add_argument("--part-of-word", metavar="TEXT", help="A substring in lemma")
+    parser.add_argument("--lang", default=settings.DEFAULT_LANG, choices=list(settings.LANGUAGES),
+                        help="language being learned (default: %(default)s)")
     args = parser.parse_args()
 
-    run(settings.DEFAULT_LANG, args.source, args.last, args.part_of_word or "")
+    run(args.lang, args.source, args.last, args.part_of_word or "")

@@ -51,8 +51,8 @@ ID достань из ссылки: для `youtube.com/watch?v=XXXXXXXXXXX` э
 
 ### 2. Сохранить транскрипт в файл
 
-Сохрани текст транскрипта в папку:
-`/Users/vadimbesten/PycharmProjects/LangHelper/data/transcribation/`
+Сохрани текст транскрипта в папку `data/transcribation/` внутри проекта LangHelper — того, из которого запущен
+MCP-сервер `langhelper`. Если полный путь к проекту тебе неизвестен, спроси у пользователя один раз.
 
 **Обычное видео — один файл:** `{название_видео}.txt`
 

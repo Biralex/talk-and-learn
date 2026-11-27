@@ -9,6 +9,7 @@ from src.db import db
 from src.adhoc import grading
 from src.adhoc.browse import extract_video_id
 from src.adhoc.log_utils import get_logger
+from src.lang import display, display_sentence
 
 logger = get_logger(__name__)
 
@@ -86,26 +87,27 @@ def unlock_reverse_card(conn, card_id: int, word_id: int) -> None:
     )
 
 
-def show_card(word, direction: str) -> None:
+def show_card(word, direction: str, lang: str) -> None:
     print(settings.SEPARATOR)
     if direction == "fwd":
-        print(f"  {word['lemma']}")
+        print(f"  {display(lang, word['lemma'])}")
     else:
         variants = " / ".join(v.strip() for v in word["translation"].split(";"))
         print(f"  {variants}")
     print()
 
 
-def show_result(examples, correct: bool, fuzzy: bool, expected: list[str]) -> None:
+def show_result(examples, correct: bool, fuzzy: bool, expected: list[str], lang: str, direction: str) -> None:
     if correct:
         status = "Correct (typo)" if fuzzy else "Correct"
     else:
         status = "Incorrect"
     print(f"  {status}")
-    print(f"  Answer: {' / '.join(expected)}")
+    answers = [display(lang, e) for e in expected] if direction == "rev" else expected
+    print(f"  Answer: {' / '.join(answers)}")
     print()
     for i, ex in enumerate(examples, 1):
-        print(f"  {i}. {ex['sentence']}")
+        print(f"  {i}. {display_sentence(lang, ex['sentence'])}")
         print(f"     {ex['translation']}")
 
 
@@ -144,7 +146,7 @@ def run(lang: str, direction: str, include_new: bool = True, source_url: str = "
                 else [word["lemma"]]
             )
 
-            show_card(word, card_dir)
+            show_card(word, card_dir, lang)
 
             recent = db.recent_think_ms(conn, card_dir, settings.BASELINE_N)
             start = time.perf_counter()
@@ -155,10 +157,12 @@ def run(lang: str, direction: str, include_new: bool = True, source_url: str = "
             elapsed_ms = int((time.perf_counter() - start) * 1000)
 
             correct, rating, fuzzy, think_ms = grading.grade(
-                expected, user_input, elapsed_ms, recent
+                expected, user_input, elapsed_ms, recent,
+                # reverse cards are answered in the language being learned
+                answer_lang=lang if card_dir == "rev" else None,
             )
 
-            show_result(examples, correct, fuzzy, expected)
+            show_result(examples, correct, fuzzy, expected, lang, card_dir)
 
             now = datetime.now(timezone.utc).isoformat()
 
@@ -213,6 +217,8 @@ if __name__ == "__main__":
         help="Card direction (default: both)")
     parser.add_argument("--no-new", action="store_true", help="Do not show new cards")
     parser.add_argument("--source", default="", help="Filter by source: conversation, grammar or YouTube URL")
+    parser.add_argument("--lang", default=settings.DEFAULT_LANG, choices=list(settings.LANGUAGES),
+                        help="language being learned (default: %(default)s)")
     args = parser.parse_args()
 
-    run(settings.DEFAULT_LANG, args.direction, not args.no_new, args.source)
+    run(args.lang, args.direction, not args.no_new, args.source)

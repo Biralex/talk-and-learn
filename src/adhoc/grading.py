@@ -3,6 +3,7 @@ import statistics
 from difflib import SequenceMatcher
 
 from src import settings
+from src.lang import answer_forms
 
 
 def normalize(text: str) -> str:
@@ -19,7 +20,7 @@ def normalize(text: str) -> str:
 
 
 def grade(expected: list[str], user_input: str, elapsed_ms: int,
-          recent_think_ms: list[int]) -> tuple[bool, int, bool, int]:
+          recent_think_ms: list[int], answer_lang: str | None = None) -> tuple[bool, int, bool, int]:
     """Check user answer and compute FSRS rating
 
     Args:
@@ -28,6 +29,9 @@ def grade(expected: list[str], user_input: str, elapsed_ms: int,
         elapsed_ms: total time from card shown to Enter pressed, in milliseconds
         recent_think_ms: think times from previous correct answers, used to
                          compute a personal speed baseline for the rating
+        answer_lang: set when the answer is in the language being learned (e.g. "sr"):
+                     a Serbian answer is accepted in Cyrillic or Latin, and without
+                     diacritics (kuca for kuća) as a typo
 
     Returns:
         (correct, rating, fuzzy, think_ms) where correct is whether the answer
@@ -39,16 +43,30 @@ def grade(expected: list[str], user_input: str, elapsed_ms: int,
     if not user_input.strip():
         return False, 1, False, think_ms
 
-    norm_input = normalize(user_input)
-    norm_expected = [normalize(e) for e in expected]
+    if answer_lang:
+        exact_input, loose_input = (normalize(f) for f in answer_forms(answer_lang, user_input))
+        exact_expected, loose_expected = [], []
+        for e in expected:
+            exact, loose = answer_forms(answer_lang, e)
+            exact_expected.append(normalize(exact))
+            loose_expected.append(normalize(loose))
+    else:
+        exact_input = loose_input = normalize(user_input)
+        exact_expected = loose_expected = [normalize(e) for e in expected]
 
     # exact match
-    if norm_input in norm_expected:
+    if exact_input in exact_expected:
         rating = compute_rating(think_ms, recent_think_ms, fuzzy=False)
         return True, rating, False, think_ms
 
+    # the same word typed without diacritics (kuca for kuća): counts as a typo
+    if loose_input in loose_expected:
+        rating = compute_rating(think_ms, recent_think_ms, fuzzy=True)
+        return True, rating, True, think_ms
+
     # typo
-    for exp in norm_expected:
+    norm_input = loose_input
+    for exp in loose_expected:
         if len(exp) >= settings.FUZZY_MIN_LEN:
             ratio = SequenceMatcher(None, norm_input, exp).ratio()
             if ratio >= settings.FUZZY_RATIO:

@@ -11,6 +11,7 @@ from src import settings
 from src.adhoc import vocab_candidate_finder
 from src.adhoc.log_utils import get_logger
 from src.db import db
+from src.lang import display, normalize_lemma, to_storage
 from src.pronunciation_of_words import client as tts
 
 logger = get_logger(__name__)
@@ -22,7 +23,11 @@ mcp = MCPServer("langhelper")
 def prepare_words(path: str, lang: str = "en") -> str:
     """
     Reads the transcript, lemmatizes it and filters out high-frequency and already known words.
-     Returns a list of candidates in the following format: lemma | context window
+    Returns a list of candidates in the following format: lemma | context window
+
+    For Serbian (lang="sr") the text may be in Cyrillic or Latin; candidates come back in Latin.
+    Their lemmas are produced by a Croatian model and are hints only: always write the correct
+    Serbian (ekavian) dictionary form yourself when saving.
     """
     try:
         return vocab_candidate_finder.prepare_text(vocab_candidate_finder.read_transcript(path), lang)
@@ -37,10 +42,14 @@ def add_words(entries: list, lang: str = "en", source_url: str = "") -> str:
     Save a batch of vocabulary entries to db and generate TTS audio for each.
 
     Each entry in ``entries`` must contain:
-      - ``lemma`` (str): the base form of the word.
-      - ``translation`` (str): the target-language translation.
+      - ``lemma`` (str): the base form of the word in the language being learned.
+      - ``translation`` (str): its translation into the learner's language (Russian);
+        several meanings separated by ``;``.
       - ``examples`` (list[dict], optional): example sentences, each a dict
-        ``{"sentence": "<English sentence>", "translation": "<its translation>"}``.
+        ``{"sentence": "<sentence in the language being learned>", "translation": "<its translation>"}``.
+
+    Serbian (lang="sr"): lemma and sentences may be given in Cyrillic or Latin; they are
+    stored in Latin and shown to the learner in both alphabets.
 
     Entries with an empty lemma or empty translation are recorded as invalid and skipped.
     Entries whose lemma already exists in the database are recorded as duplicates and skipped.
@@ -49,7 +58,7 @@ def add_words(entries: list, lang: str = "en", source_url: str = "") -> str:
 
     Args:
         entries: list of dicts, each describing one vocabulary item.
-        lang: language code used to select the target database (default ``"en"``).
+        lang: language being learned, which selects the database: "en" (default) or "sr".
         source_url: optional string identifying the source — a YouTube video URL,
             ``"conversation"`` for conversation-practice sessions, ``"grammar"``
             for grammar sessions, or empty string when the source is unknown.
@@ -68,7 +77,7 @@ def add_words(entries: list, lang: str = "en", source_url: str = "") -> str:
     try:
         for entry in entries:
             lemma_raw = entry.get("lemma", "")
-            lemma = " ".join(lemma_raw.strip().lower().split())
+            lemma = normalize_lemma(lang, lemma_raw)
             translation = (entry.get("translation") or "").strip()
 
             if not lemma or not translation:
@@ -77,14 +86,17 @@ def add_words(entries: list, lang: str = "en", source_url: str = "") -> str:
                 logger.warning("Invalid entry skipped: %s", reason)
                 continue
 
-            examples = entry.get("examples", [])
+            examples = [
+                {"sentence": to_storage(lang, ex["sentence"]), "translation": ex["translation"]}
+                for ex in entry.get("examples", [])
+            ]
 
             try:
                 word_id = db.add_word(conn, lemma, translation, examples, source_url)
                 if word_id:
                     added.append(lemma)
                     try:
-                        audio_path = tts.save(lemma, voice=settings.TTS_VOICE)
+                        audio_path = tts.save(lemma, lang=lang)
                         db.set_audio_path(conn, word_id, str(audio_path))
                     except Exception as e:
                         logger.warning("TTS failed for '%s': %s", lemma, e)
@@ -120,8 +132,9 @@ def prepare_text(text: str, lang: str = "en") -> str:
     enough context for translation.
 
     Args:
-        text: plain English text of the session. May contain punctuation and mixed case.
-        lang: language code used to select the target database (default ``"en"``).
+        text: plain text of the session in the language being learned. May contain
+            punctuation and mixed case; Serbian may be in Cyrillic or Latin.
+        lang: language being learned, which selects the database: "en" (default) or "sr".
 
     Returns:
         A string in the following format:
@@ -152,7 +165,7 @@ def start_conversation_topic(lang: str = "en") -> str:
     together with up to words selected for review
 
     Args:
-        lang: language code used to select the target database (default ``"en"``).
+        lang: language being learned, which selects the database: "en" (default) or "sr".
 
     Returns:
         A newline-separated string in the following format:
@@ -183,7 +196,7 @@ def start_conversation_topic(lang: str = "en") -> str:
         if words:
             lines.append(f"PRACTICE_WORDS ({len(words)}):")
             for lemma, translation in words:
-                lines.append(f"- {lemma} | {translation}")
+                lines.append(f"- {display(lang, lemma)} | {translation}")
         else:
             lines.append("PRACTICE_WORDS (0): none")
 
@@ -204,7 +217,7 @@ def finish_conversation_topic(topic_id: int, lang: str = "en") -> str:
 
     Args:
         topic_id: the integer ID returned by ``start_conversation_topic``.
-        lang: language code used to select the target database (default ``"en"``).
+        lang: language being learned, which selects the database: "en" (default) or "sr".
 
     Returns:
         ``"OK: topic <id> marked done"`` on success,
@@ -234,7 +247,7 @@ def start_grammar_topic(lang: str = "en") -> str:
     together with up to words selected for review
 
     Args:
-        lang: language code used to select the target database (default ``"en"``).
+        lang: language being learned, which selects the database: "en" (default) or "sr".
 
     Returns:
         A newline-separated string in the following format::
@@ -265,7 +278,7 @@ def start_grammar_topic(lang: str = "en") -> str:
         if words:
             lines.append(f"PRACTICE_WORDS ({len(words)}):")
             for lemma, translation in words:
-                lines.append(f"- {lemma} | {translation}")
+                lines.append(f"- {display(lang, lemma)} | {translation}")
         else:
             lines.append("PRACTICE_WORDS (0): none")
 
@@ -286,7 +299,7 @@ def finish_grammar_topic(topic_id: int, lang: str = "en") -> str:
 
     Args:
         topic_id: the integer ID returned by ``start_grammar_topic``.
-        lang: language code used to select the target database (default ``"en"``).
+        lang: language being learned, which selects the database: "en" (default) or "sr".
 
     Returns:
         ``"OK: topic <id> marked done"`` on success,

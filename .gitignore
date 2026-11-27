@@ -1,4 +1,10 @@
-data/
+# generated data; topic lists in data/ are tracked
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/*.log
+data/audio/
+data/transcribation/
 .qodo/
 .venv/
 __pycache__/
