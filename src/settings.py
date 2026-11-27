@@ -3,7 +3,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
 AUDIO_DIR = DATA_DIR / "audio"
-TTS_URL = "http://0.0.0.0:9091"
+TTS_URL = "http://127.0.0.1:9091"
 TTS_VOICE = "af_sky"
 
 DEFAULT_LANG = "en"

@@ -39,7 +39,8 @@ def add_words(entries: list, lang: str = "en", source_url: str = "") -> str:
     Each entry in ``entries`` must contain:
       - ``lemma`` (str): the base form of the word.
       - ``translation`` (str): the target-language translation.
-      - ``examples`` (list[str], optional): example sentences.
+      - ``examples`` (list[dict], optional): example sentences, each a dict
+        ``{"sentence": "<English sentence>", "translation": "<its translation>"}``.
 
     Entries with an empty lemma or empty translation are recorded as invalid and skipped.
     Entries whose lemma already exists in the database are recorded as duplicates and skipped.

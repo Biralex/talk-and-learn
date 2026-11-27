@@ -10,6 +10,11 @@ logger = get_logger(__name__)
 
 SCHEMA = Path(__file__).resolve().parent / "schema.sql"
 TOPIC_TABLES = frozenset({"topics", "grammar_topics"})
+# Topic lists shipped with the repo, loaded on init: table -> Markdown file ("- Title" lines)
+DEFAULT_TOPIC_FILES = {
+    "topics": settings.ROOT / "data" / "topics_names.md",
+    "grammar_topics": settings.ROOT / "data" / "grammar_topics_names.md",
+}
 
 def db_path(lang: str) -> Path:
     return settings.DATA_DIR / f"{lang}.db"
@@ -35,6 +40,26 @@ def init(lang: str) -> None:
     conn.commit()
     conn.close()
     logger.info("The %s database has been initialized", db_path(lang))
+
+
+def read_topic_titles(path: Path) -> list[str]:
+    """Read topic titles from a Markdown file with lines in the format '- Title'"""
+    lines = path.read_text(encoding="utf-8").splitlines()
+    return [line[2:].strip() for line in lines if line.startswith("- ")]
+
+
+def load_default_topics(lang: str) -> None:
+    """Load the conversation and grammar topic lists shipped with the repo (duplicates are skipped)"""
+    conn = connect(lang)
+    try:
+        for table, path in DEFAULT_TOPIC_FILES.items():
+            if not path.exists():
+                logger.warning("Topic file %s not found, %s left as is", path, table)
+                continue
+            added, skipped = add_topics(conn, read_topic_titles(path), table)
+            logger.info("%s: added %d, already present %d", table, added, skipped)
+    finally:
+        conn.close()
 
 
 def set_audio_path(conn: sqlite3.Connection, word_id: int, audio_path: str) -> None:
@@ -182,8 +207,15 @@ def practice_words(conn: sqlite3.Connection, n: int) -> list[tuple[str, str]]:
 
 
 def due_cards(conn: sqlite3.Connection, direction: str | None = None) -> list[sqlite3.Row]:
+    """
+    Return cards whose due date has passed. Includes reverse cards that were
+    unlocked (due set) but never reviewed; new fwd cards come from new_fwd_cards()
+    """
     now = datetime.now(timezone.utc).isoformat()
-    query = "SELECT * FROM cards WHERE due IS NOT NULL AND due <= ? AND last_review IS NOT NULL"
+    query = (
+        "SELECT * FROM cards WHERE due IS NOT NULL AND due <= ? "
+        "AND (last_review IS NOT NULL OR direction = 'rev')"
+    )
     params: list = [now]
     if direction:
         query += " AND direction = ?"
@@ -229,6 +261,8 @@ def all_cards_for_word_ids(
                 WHEN last_review IS NOT NULL AND due <= ? THEN 0
                 WHEN last_review IS NOT NULL AND due > ?  THEN 1
                 WHEN last_review IS NULL AND direction = 'fwd' THEN 2
+                -- unlocked reverse card that has never been reviewed yet
+                WHEN last_review IS NULL AND direction = 'rev' AND due IS NOT NULL THEN 2
                 ELSE 3
             END AS _priority
         FROM cards
@@ -279,5 +313,6 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "init":
         lang = sys.argv[2] if len(sys.argv) > 2 else settings.DEFAULT_LANG
         init(lang)
+        load_default_topics(lang)
     else:
         print("Usage: python -m src.db.db init [lang]")

@@ -1,5 +1,6 @@
 import argparse
 import re
+import shutil
 import subprocess
 import sys
 import termios
@@ -8,6 +9,24 @@ from src import settings
 from src.db import db
 
 SEPARATOR = settings.SEPARATOR
+
+# Command-line audio players, tried in order. afplay ships with macOS;
+# paplay/pw-play/aplay come with PulseAudio/PipeWire/ALSA on Linux; ffplay with ffmpeg
+AUDIO_PLAYERS = [
+    ["afplay"],
+    ["paplay"],
+    ["pw-play"],
+    ["aplay", "-q"],
+    ["ffplay", "-nodisp", "-autoexit", "-loglevel", "quiet"],
+]
+
+
+def find_audio_player() -> list[str] | None:
+    """Return the command of the first audio player found on PATH, or None"""
+    for cmd in AUDIO_PLAYERS:
+        if shutil.which(cmd[0]):
+            return cmd
+    return None
 
 
 def extract_video_id(url: str) -> str | None:
@@ -32,7 +51,7 @@ def get_character() -> str:
         termios.tcsetattr(fd, termios.TCSADRAIN, old)
 
 
-def render_word(word: dict, idx: int, total: int) -> None:
+def render_word(word: dict, idx: int, total: int, can_play: bool = True) -> None:
     """
     Clear the screen and display a word card with translation, examples, and navigation hint
     """
@@ -45,8 +64,10 @@ def render_word(word: dict, idx: int, total: int) -> None:
         print(f"  {i}. {ex['sentence']}")
         print(f"     {ex['translation']}")
     print()
-    audio_hint = "  [Space] play audio" if word["audio_path"] else ""
+    audio_hint = "  [Space] play audio" if word["audio_path"] and can_play else ""
     print(f"  [{idx + 1}/{total}]{audio_hint}    [← →] navigation    [q] quit")
+    if word["audio_path"] and not can_play:
+        print("  (no audio player found: install pulseaudio-utils, alsa-utils or ffmpeg)")
 
 
 def browse(words: list) -> None:
@@ -56,8 +77,10 @@ def browse(words: list) -> None:
 
     idx = 0
     audio_proc = None
+    player = find_audio_player()
+    can_play = player is not None
 
-    render_word(words[idx], idx, len(words))
+    render_word(words[idx], idx, len(words), can_play)
 
     while True:
         ch = get_character()
@@ -66,14 +89,21 @@ def browse(words: list) -> None:
             break
         elif ch == '\x1b[C':  # →
             idx = (idx + 1) % len(words)
-            render_word(words[idx], idx, len(words))
+            render_word(words[idx], idx, len(words), can_play)
         elif ch == '\x1b[D':  # ←
             idx = (idx - 1) % len(words)
-            render_word(words[idx], idx, len(words))
-        elif ch == ' ' and words[idx]["audio_path"]:
+            render_word(words[idx], idx, len(words), can_play)
+        elif ch == ' ' and words[idx]["audio_path"] and can_play:
             if audio_proc and audio_proc.poll() is None:
                 audio_proc.terminate()
-            audio_proc = subprocess.Popen(["afplay", words[idx]["audio_path"]])
+            audio_proc = subprocess.Popen(
+                player + [words[idx]["audio_path"]],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+
+    if audio_proc and audio_proc.poll() is None:
+        audio_proc.terminate()
 
 
 def run(lang: str, source: str, last: int | None, part_of_word: str) -> None:

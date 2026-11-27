@@ -12,8 +12,7 @@ def main() -> None:
     parser.add_argument("--table", default="topics", choices=["topics", "grammar_topics"])
     args = parser.parse_args()
 
-    lines = Path(args.path).read_text(encoding="utf-8").splitlines()
-    titles = [line[2:].strip() for line in lines if line.startswith("- ")]
+    titles = db.read_topic_titles(Path(args.path))
 
     db.init(args.lang)
     conn = db.connect(args.lang)
