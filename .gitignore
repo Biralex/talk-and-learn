@@ -8,3 +8,4 @@ __pycache__/
 .DS_Store
 src/pronunciation_of_words/weights/Kokoro/
 src/pronunciation_of_words/weights/config.json
+/models/

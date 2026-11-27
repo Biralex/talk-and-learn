@@ -9,6 +9,7 @@ python -m venv .venv
 source .venv/bin/activate    
 pip install -r requirements.txt
 python -m spacy download en_core_web_md
+python -m src.pronunciation_of_words.local_tts   # word pronunciation model, ~120 MB, once
 ```
 
 ### Linux (Ubuntu) notes
@@ -62,9 +63,31 @@ Each word has two cards: English → translation (shown right away) and translat
 
 ## TTS
 
-Words are automatically voiced when added. Uses the [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) model, deployed on a separate GPU server, but can also be run locally without a GPU.
+Words are automatically voiced when added, with the [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) model. The backend is chosen by `TTS_BACKEND` in `src/settings.py`:
+
+- `"local"` (default) — the model runs on the CPU inside the app through [kokoro-onnx](https://github.com/thewh1teagle/kokoro-onnx): no Docker, PyTorch or GPU. A word takes about half a second.
+- `"server"` — a separate TTS server in Docker, e.g. on a machine with a GPU (see below).
+- `"off"` — no audio.
+
+### Local TTS (default)
+
+Download the model once (~120 MB, saved to `models/kokoro/`), optionally voicing a test word into `data/audio/`:
+
+```bash
+python -m src.pronunciation_of_words.local_tts
+python -m src.pronunciation_of_words.local_tts "look forward to"
+```
+
+If the model is missing or TTS fails, words are still saved, just without audio. To voice such words later, or to re-voice everything after changing `TTS_VOICE` (e.g. `af_heart`, `am_michael`, `bf_emma`):
+
+```bash
+python -m src.adhoc.voice_words          # only words without audio
+python -m src.adhoc.voice_words --all    # every word
+```
 
 ### Starting TTS server
+
+Only needed with `TTS_BACKEND = "server"`.
 
 ```bash
 cd src/pronunciation_of_words
@@ -73,4 +96,4 @@ docker compose up --build
 
 The server listens on the port defined in `src/pronunciation_of_words/.env` (`TTS_PORT`). Model weights are mounted from `weights/`. If the server runs on another machine or port, update the `TTS_URL` variable in `src/settings.py` (default `http://127.0.0.1:9091`).
 
-The TTS server is optional: if it is not running, words are still saved, just without audio.
+If the server is not running, words are still saved, just without audio.

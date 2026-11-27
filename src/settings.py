@@ -3,8 +3,23 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
 AUDIO_DIR = DATA_DIR / "audio"
+# Word pronunciation:
+#   "local"  - Kokoro-82M on CPU inside the app (python -m src.pronunciation_of_words.local_tts to download)
+#   "server" - the Docker/GPU TTS server at TTS_URL (see src/pronunciation_of_words/docker-compose.yml)
+#   "off"    - no audio
+TTS_BACKEND = "local"
 TTS_URL = "http://127.0.0.1:9091"
 TTS_VOICE = "af_sky"
+TTS_LANG = "en-us"
+
+KOKORO_DIR = ROOT / "models" / "kokoro"
+_KOKORO_RELEASE = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0"
+KOKORO_MODEL_FILE = "kokoro-v1.0.int8.onnx"
+KOKORO_MODEL_URL = f"{_KOKORO_RELEASE}/{KOKORO_MODEL_FILE}"
+KOKORO_MODEL_SHA256 = "6e742170d309016e5891a994e1ce1559c702a2ccd0075e67ef7157974f6406cb"
+KOKORO_VOICES_FILE = "voices-v1.0.bin"
+KOKORO_VOICES_URL = f"{_KOKORO_RELEASE}/{KOKORO_VOICES_FILE}"
+KOKORO_VOICES_SHA256 = "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
 
 DEFAULT_LANG = "en"
 SPACY_MODELS = {"en": "en_core_web_md"}
